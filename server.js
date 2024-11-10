@@ -130,7 +130,6 @@ app.put('/tasks/:id', async (req, res) => {
   }
 });
 
-// Delete Task
 app.delete('/tasks/:id', async (req, res) => {
   try {
     const deletedTask = await Task.findByIdAndDelete(req.params.id);
