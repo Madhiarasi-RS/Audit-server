@@ -67,21 +67,40 @@ exports.deleteEmployee = async (req, res) => {
   }
 };
 
-// Mark Attendance
-exports.markAttendance = async (req, res) => {
+// Increase attendance count
+exports.increaseAttendance = async (employeeId, res) => {
   try {
-    const employee = await Employee.findById(req.params.id);
-    if (!employee) return res.status(404).json({ message: "Employee not found" });
+    const employee = await Employee.findById(employeeId);
+    
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
 
-    employee.attendance += 1;
-    await employee.save();
-
-    const newAttendance = new Attendance({ employeeId: employee._id, status: 'Present' });
-    await newAttendance.save();
-
-    res.json({ message: "Attendance marked", employee });
+    employee.attendanceCount += 1;
+    const updatedEmployee = await employee.save();
+    
+    res.json(updatedEmployee);
   } catch (error) {
-    console.error("Error marking attendance:", error);
-    res.status(500).json({ message: "Failed to mark attendance" });
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Decrease attendance count
+exports.decreaseAttendance = async (employeeId, res) => {
+  try {
+    const employee = await Employee.findById(employeeId);
+
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    employee.attendanceCount = Math.max(0, employee.attendanceCount - 1);
+    const updatedEmployee = await employee.save();
+
+    res.json(updatedEmployee);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
   }
 };
